@@ -42,8 +42,20 @@ def game_intro():
     print("6. Click ENTER to roll the dice.")
     print("7. The fisrt player to get to the FINAL(100) position is the winner.")
 
+
+def dice_roll():
+    return random.randint(1, 6)
+
 if __name__ == "__main__":
     game_intro()
+    
+    print("Rolling the dice 5 times:")
+    for i in range(5):
+        roll_result = dice_roll()
+        print(f"Roll {i+1}: {roll_result}")
+        time.sleep(0.5)
+
+
 
 
 
