@@ -38,9 +38,9 @@ def game_intro():
     print("2. You should roll the dice in turns")
     print("3. Move foward the number of spaces shown on the dice.")
     print("4. If you land at the bottom of the ladder, you move up to the top of the ladder.")
-    print("5. If you land at the head of a snake, you must slide down to the bottom of the snake.")
+    print("5. If you land at the head of a snake, you must slide down to the tail of the snake.")
     print("6. Click ENTER to roll the dice.")
-    print("7. The fisrt player to get to the FINAL(100) position is the winner.")
+    print("7. The first player to get to the FINAL(100) position is the winner.")
 
 
 def dice_roll():
@@ -63,32 +63,48 @@ def check_position(player_name, position):
 def play_game():
     game_intro()
 
-    num_players = 0
-    while not (1 <= num_players <= 4):
+    number_of_players = 0
+    while number_of_players <= 0:
         try:
-            num_players =  int(input("Enter the number of players (1-4):"))
-            if not (1 <= num_players <= 4):
+            number_of_players =  int(input("Enter the number of players (1-4):"))
+            if (0 <= number_of_players > 4 ):
                 print("Please enter a number between 1 and 4.")
-        except ValueError:
+        except:
             print("Invalid input . Please enter a number.")
 
     players = {}
 
-    for i in range(num_players):
+    for i in range(number_of_players):
         while True:
             player_name = input(f"Enter name for Player {i + 1}:").strip()
             if player_name:
                  if player_name in players:
-                    print(f"{player_name} is already taken. Please enter a unique name.")
+                    print(f"This {player_name} is already taken. Please another name.")
                  else:
                     players[player_name] = START
-                    print(f"{player_name} starts at position {START}.")
+                    print(f"{player_name} is at position {START}.")
                     break
             else:
-                print(f"Player name cannot be empty. Please enter a name.")
+                print(f"Player name cannot be left empty. Please enter a name to play.")
     
     turn_order = list(players.keys())
     current_player_index = 0
+
+    game_over = False
+    print("The game is now starting")
+    time.sleep(2)
+   
+    while not game_over:
+        player_name = turn_order[current_player_index]
+        current_position = players[player_name]
+
+        print(f"It is {player_name}'s turn to play")
+        print(f"Your current position: {current_position}")
+
+        current_player_index = (current_player_index + 1) % number_of_players
+        if current_player_index == 0:
+            print("The round has come to an end")
+            game_over = True
 
 
     
@@ -96,33 +112,7 @@ def play_game():
 
 
 if __name__ == "__main__":
-    game_intro()
-    
-    print("Rolling the dice 5 times:")
-    for i in range(5):
-        roll_result = dice_roll()
-        print(f"Roll {i+1}: {roll_result}")
-        time.sleep(0.5)
-
-        test_player = "Test Player"
-
-        test_pos_ladder = 21
-        print(f"\n{test_player} is at {test_pos_ladder}. Checking for ladder...")
-        updated_pos_ladder = check_position(test_player, test_pos_ladder)
-        print(f"New position after check: {updated_pos_ladder}")
-        time.sleep(1)
-
-        test_pos_snake = 99
-        print(f"\n{test_player} is at {test_pos_snake}. Checking for snake...")
-        updated_pos_snake = check_position(test_player, test_pos_snake)
-        print(f"New position after check:{updated_pos_snake}")
-        time.sleep(1)
-
-        test_pos_normal = 50
-        print(f"\n{test_player} is at {test_pos_normal}. Checking for special square...")
-        updated_pos_normal = check_position(test_player, test_pos_normal)
-        print(f"New position after check: {updated_pos_normal}")
-        time.sleep(1)
+    play_game()
 
 
 
