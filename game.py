@@ -100,12 +100,35 @@ def play_game():
 
         print(f"It is {player_name}'s turn to play")
         print(f"Your current position: {current_position}")
+        input("Press ENTER to roll the dice...")             
 
-        current_player_index = (current_player_index + 1) % number_of_players
-        if current_player_index == 0:
-            print("The round has come to an end")
-            game_over = True
+        roll = dice_roll()
+        print(f"{player_name} rolled a {roll}!")
 
+        position_after_roll = current_position + roll
+
+        if position_after_roll > END:
+            print("{player_name} will remain in the same position")
+        else:
+            print(f"{player_name} moving to position {position_after_roll}")
+            time.sleep(1)
+        
+            final_position = check_position(player_name, position_after_roll) 
+            players[player_name] = final_position
+
+            print(f"{player_name}'s new position is {players[player_name]}")
+
+            if players[player_name] == END:
+               print(f"BRAVO, {player_name}! You have won the game! You are the first player to reach position {END}")
+               game_over = True
+
+        if not game_over:
+            current_player_index = (current_player_index + 1) % number_of_players
+            time.sleep(1)
+
+
+
+       
 
     
 
