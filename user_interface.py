@@ -1,5 +1,4 @@
-import random 
-import time
+import tkinter as tk
 
 SNAKES = {
     99: 80,
@@ -30,11 +29,38 @@ END = 100
 
 ROWS = 10
 COLUMNS = 10
-SQUARE_BOX_SIZE = 50
+SQUARE_BOX_SIZE = 70
 
-WIDTH = ROWS * SQUARE_BOX_SIZE
-HEIGHT = COLUMNS * SQUARE_BOX_SIZE
+
+def draw_game_board(canvas):
+    for row in range(ROWS):
+        for column in range(COLUMNS):
+            color = "red"
+
+            x1 = column * SQUARE_BOX_SIZE
+            y1 = row * SQUARE_BOX_SIZE
+            x2 = x1 + SQUARE_BOX_SIZE
+            y2 = y1 + SQUARE_BOX_SIZE
+
+
+            canvas.create_rectangle(x1, y1, x2, y2, fill=color, width=1)
+
 
 def game_window():
     
     window = tk.Tk()
+    window.title("Snakes and Ladders")
+
+    window.geometry("700x700")
+    window.resizable(False, False)
+
+    game_board = tk.Canvas(window, width=700, height=700, bg="white")
+    game_board.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    draw_game_board(game_board)
+
+    window.mainloop()
+
+if __name__ == "__main__":
+    game_window()
+    print("Tkinter Step 1 (Revised) Complete: Canvas created with defined board dimensions.")
