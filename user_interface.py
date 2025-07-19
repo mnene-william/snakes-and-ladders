@@ -45,6 +45,37 @@ def draw_game_board(canvas):
 
             canvas.create_rectangle(x1, y1, x2, y2, fill=color, width=1)
 
+BOARD_UNITS= {}
+
+def board_number():
+    for number in range(1, END + 1):
+        actual_row = (number - 1) // COLUMNS
+
+        if actual_row % 2 == 0:
+            actual_column = (number -1) % COLUMNS
+        else:
+            actual_column = COLUMNS - 1 -((number - 1) % COLUMNS)
+
+        first_row = (ROWS - 1) - actual_row
+
+        x_top_cordinate = actual_column * SQUARE_BOX_SIZE
+        y_top_cordinate = first_row * SQUARE_BOX_SIZE
+
+        x_center_cordinate = (SQUARE_BOX_SIZE * 0.5)  + x_top_cordinate
+        y_center_cordinate = (SQUARE_BOX_SIZE * 0.5) + y_top_cordinate
+
+        BOARD_UNITS[number] = (x_center_cordinate, y_center_cordinate)
+
+
+def put_numbers_on_board(canvas):
+    for pos in range(1, END + 1):
+        x_cordinate, y_cordinate = BOARD_UNITS[pos]
+        canvas.create_text(x_cordinate, y_cordinate, text=str(pos), fill="black", font=("bold", 12))
+
+
+
+
+
 
 def game_window():
     
@@ -56,11 +87,13 @@ def game_window():
 
     game_board = tk.Canvas(window, width=700, height=700, bg="white")
     game_board.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
+ 
+  
     draw_game_board(game_board)
+    board_number()
+    put_numbers_on_board(game_board)
 
     window.mainloop()
 
 if __name__ == "__main__":
     game_window()
-    print("Tkinter Step 1 (Revised) Complete: Canvas created with defined board dimensions.")
