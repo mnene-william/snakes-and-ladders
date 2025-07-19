@@ -25,9 +25,9 @@ LADDERS = {
     71: 91,
     80: 100
 }
+
 START = 0
 END = 100
-
 
 
 def game_intro():
