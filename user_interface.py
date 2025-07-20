@@ -1,5 +1,6 @@
 import tkinter as tk
 
+
 SNAKES = {
     99: 80,
     95: 75,
@@ -35,7 +36,7 @@ SQUARE_BOX_SIZE = 70
 def draw_game_board(canvas):
     for row in range(ROWS):
         for column in range(COLUMNS):
-            color = "red"
+            color = "blue" if (row + column) % 2 == 0 else "orange"
 
             x1 = column * SQUARE_BOX_SIZE
             y1 = row * SQUARE_BOX_SIZE
@@ -46,6 +47,30 @@ def draw_game_board(canvas):
             canvas.create_rectangle(x1, y1, x2, y2, fill=color, width=1)
 
 BOARD_UNITS= {}
+
+def drawing_the_snakes_and_ladders(canvas):
+    for start_position, end_position in LADDERS.items():
+        x1, y1 = BOARD_UNITS[start_position]
+        x2, y2 = BOARD_UNITS[end_position]
+
+        ladder_color = "#895129"
+
+        canvas.create_line(x1, y1, x2, y2, fill=ladder_color, width=4, capstyle=tk.ROUND)
+
+
+        canvas.create_oval(x1-3, y1-3, x1+3, y1+3, fill=ladder_color)
+        canvas.create_oval(x2-3, y2-3, x2+3, y2+3, fill=ladder_color)
+
+    for start_position, end_position in SNAKES.items():
+        x1, y1 = BOARD_UNITS[start_position]
+        x2, y2 = BOARD_UNITS[end_position]
+
+        snakes_color = "#008000"
+
+        canvas.create_line(x1, y1, x2, y2, fill=snakes_color, width=4, capstyle=tk.ROUND)
+        canvas.create_oval(x1-3, y1-3, x1+3, y1+3, fill=snakes_color)
+        canvas.create_oval(x2-3, y2-3, x2+3, y2+3, fill=snakes_color)
+
 
 def board_number():
     for number in range(1, END + 1):
@@ -92,6 +117,7 @@ def game_window():
     draw_game_board(game_board)
     board_number()
     put_numbers_on_board(game_board)
+    drawing_the_snakes_and_ladders(game_board)
 
     window.mainloop()
 
