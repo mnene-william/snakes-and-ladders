@@ -29,16 +29,23 @@ LADDERS = {
 }
 START = 0
 END = 100
+FIRST_SQUARE = 1
 
 ROWS = 10
 COLUMNS = 10
 SQUARE_BOX_SIZE = 70
 
+PLAYER_TOKEN_COLORS = ["#ff0000", "#0000ff", "#ffff00", "#800080"]
+
 
 def draw_game_board(canvas):
     for row in range(ROWS):
         for column in range(COLUMNS):
-            color = "blue" if (row + column) % 2 == 0 else "orange"
+             
+            if (row + column) % 2 == 0:
+                color = "blue"
+            else:
+                color = "orange"
 
             x1 = column * SQUARE_BOX_SIZE
             y1 = row * SQUARE_BOX_SIZE
@@ -103,13 +110,19 @@ def put_numbers_on_board(canvas):
 class GameLogic:
     def __init__(self, master):
         self.master = master
+
         self.master.title("Snakes and Ladders")
-        self.master.geometry("700x700")
+        self.master.geometry("950x700")
         self.master.resizable(False, False)
 
-        self.players_info = []
+        self.players_info = [
+            {'name': 'Player 1', 'position': START, 'color': PLAYER_TOKEN_COLORS[0], 'id': None},
+            {'name': 'Player 2', 'position': START, 'color': PLAYER_TOKEN_COLORS[1], 'id': None}
+
+        ]
+        
+        self.num_players = len(self.players_info)
         self.player_index = 0
-        self.num_players = 0
 
         self.game_board_frame = tk.Frame(self.master)
         self.game_board_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -126,63 +139,158 @@ class GameLogic:
         put_numbers_on_board(self.game_board)
         drawing_the_snakes_and_ladders(self.game_board)
 
-        self.player_controls()
+        self.game_ui()
 
 
-    def player_controls(self):
+    def game_ui(self):
+
         for widget in self.game_controls.winfo_children():
             widget.destroy()
 
-        tk.Label(self.game_controls, text="Number of Players:", bg="lightgray").pack(pady=10)
+
+        self.current_player_lbl = tk.Label(
+            self.game_controls, text="Current Turn:\n", bg="lightgray",
+            font=("Poppins", 14, "bold")
+        )
+        self.current_player_lbl.pack(pady=10)
+
+        self.dice_result_lbl = tk.Label(
+            self.game_controls, text="Roll: -", bg="lightgray",font=("Poppins", 18, "bold") )
+        self.dice_result_lbl.pack(pady=10)
+
+
+        self.roll_button = tk.Button(
+            self.game_controls, text="Roll Dice", command=self.roll_dice,font=("Poppins", 16, "bold") )
+        self.roll_button.pack(pady=20)
+
+
+        self.player_tokens()
+        self.current_player()
+
+
+
+
+    def get_player_position(self, player_info):
+
+        logical_position = player_info['position']
+
+        actual_square = FIRST_SQUARE if logical_position == START else logical_position
         
-        self.number_players_spinbox = tk.Spinbox(self.game_controls, from_=1, to=4, width=5, textvariable=self.number_of_players, command=self.update_player_entries)
-        self.number_players_spinbox.pack()
-        self.number_of_players = tk.StringVar(self.master, value="2")
 
-        self.player_entries = []
-        self.player_entry_frames = []
+        x_cordinate_center_square, y_cordinate_center_square = BOARD_UNITS[actual_square]
 
-        self.update_player_entries()
-
-        self.start_game_button = tk.Button(self.game_controls, text="START",command=self.start_game, font=("Arial", 12, "bold"))
-        self.start_game_button.pack()
-
-        self.current_player_lbl = tk.Label(self.game_controls, text="starting the game...", font=("Arial", 14, "bold"))
-        self.current_player_lbl.pack()
-
-        self.dice_result_lbl = tk.Label(self.game_controls, text="Roll: -", font=("Arial", 18, "bold"))
-        self.dice_result_lbl.pack()
+       
+        players_current_square = [player for player in self.players_info if (player['position'] == logical_position)]
 
 
-        self.roll_button = tk.Button(self.game_controls, text="Roll the Dice", command=self.roll_dice, font=("Arial", 16, "bold"))
-        self.roll_button.pack()
-
-
-    def update_player_entries(self):
-        for frame in self.player_entries:
-            frame.destroy()
-
-        self.player_entries = []
-        self.player_entry_frames = []
-
-        number = int(self.number_of_players.get())
-
-        for i in range(number):
-            frame = tk.Frame(self.game_controls)
-            frame.pack()
-
-            self.player_entry_frames.append(frame)
-
-            tk.Label(frame, text=f"player {i + 1} Name:").pack()
-
-        entry = tk.Entry(frame, width = 20)
-        entry.insert(0, f"player {i+1}")
-        entry.pack(side=tk.RIGHT, fill=tk.X, expand=True)
+        num_players_current_square = len(players_current_square)
         
-        self.player_entries.append(entry)
+        
+        current_player_in_group_index = 0
 
-    def get_player_position(self, player_information):
-        actual_position = player_information['position']
+        for index, player in enumerate(players_current_square):
+
+            if player == player_info:
+                current_player_in_group_index = index
+                break
+
+
+        spacing = 15 * 2 + 5 
+        total_width_occupied = (num_players_current_square - 1) * spacing
+        
+
+        start_x_offset = x_cordinate_center_square - (total_width_occupied * 0.5)
+        
+        final_x = start_x_offset + (current_player_in_group_index * spacing)
+        final_y = y_cordinate_center_square 
+
+        return final_x, final_y
+
+    def player_tokens(self):
+        for player in self.players_info:
+            if player['id']:
+                self.game_board.delete(player['id'])
+
+            x_cord, y_cord = self.get_player_position(player)
+
+            id = self.game_board.create_oval(
+                x_cord - 15, y_cord - 15,
+                x_cord + 15, y_cord + 15, width=1, outline="black", fill=player['color'])
+            
+            player['id'] = id
+
+    def current_player(self):
+        current_player = self.players_info[self.player_index]
+        self.current_player_lbl.config(text=f"It is {current_player['name']}'s turn", fg="black")
+
+    def move_player_token(self, player, new_position):
+
+        player['position'] = new_position
+
+        self.player_tokens()
+
+
+    def check_for_snake_ladder(self, player_position):
+
+        if player_position in LADDERS:
+            print(f" Bravo! Landed on a ladder from {player_position} to {LADDERS[player_position]}")
+            return LADDERS[player_position]
+
+        elif player_position in SNAKES:
+            print(f" Oh no! Landed on a snake from {player_position} to {SNAKES[player_position]}")
+            return SNAKES[player_position]
+        return player_position
+
+
+    def roll_dice(self):
+        current_player = self.players_info[self.player_index]
+        roll = random.randint(1, 6)
+        self.dice_result_lbl.config(text=f"Roll: {roll}")
+        print(f"{current_player['name']} rolled a {roll}")
+
+
+        new_position = current_player['position'] + roll
+
+
+        if new_position > END:
+            new_position = END
+        
+
+        self.move_player_token(current_player, new_position)
+        print(f"{current_player['name']} moved to {new_position}")
+
+        # Check for win condition
+        if new_position == END:
+            self.roll_button.config(state=tk.DISABLED) 
+            self.current_player_lbl.config(text=f"GAME OVER!\n{current_player['name']} Wins!", fg="green")
+            print(f"--- {current_player['name']} WINS THE GAME! ---")
+            return 
+
+ 
+        final_position_after_jump = self.check_for_snake_ladder(new_position)
+        if final_position_after_jump != new_position:
+
+            self.move_player_token(current_player, final_position_after_jump)
+            print(f"{current_player['name']} jumped to {final_position_after_jump}")
+
+
+        self.player_index = (self.player_index + 1) % self.num_players
+        self.current_player()
+
+
+
+def game_window():
+    window = tk.Tk()
+    game = GameLogic(window) 
+    window.mainloop()
+
+if __name__ == "__main__":
+    game_window()
+                
+
+
+            
+            
 
         
 
