@@ -162,7 +162,7 @@ class GameLogic:
         self.roll_button = tk.Button(
             self.game_controls, text="Roll Dice", command=self.roll_dice,font=("Poppins", 16, "bold") )
         self.roll_button.pack(pady=20)
-
+        
 
         self.player_tokens()
         self.current_player()
@@ -257,13 +257,13 @@ class GameLogic:
         
 
         self.move_player_token(current_player, new_position)
-        print(f"{current_player['name']} moved to {new_position}")
+        print(f"The {current_player['name']} has moved to {new_position}")
 
-        # Check for win condition
+
         if new_position == END:
             self.roll_button.config(state=tk.DISABLED) 
-            self.current_player_lbl.config(text=f"GAME OVER!\n{current_player['name']} Wins!", fg="green")
-            print(f"--- {current_player['name']} WINS THE GAME! ---")
+            self.current_player_lbl.config(text=f"GAME OVER! The {current_player['name']} Wins this round!", fg="green")
+            print(f"CONGRATULATIONS,{current_player['name']}! You have won the game! ")
             return 
 
  
@@ -271,7 +271,7 @@ class GameLogic:
         if final_position_after_jump != new_position:
 
             self.move_player_token(current_player, final_position_after_jump)
-            print(f"{current_player['name']} jumped to {final_position_after_jump}")
+            print(f"The {current_player['name']} moved to {final_position_after_jump}")
 
 
         self.player_index = (self.player_index + 1) % self.num_players
