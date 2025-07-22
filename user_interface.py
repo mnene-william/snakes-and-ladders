@@ -35,7 +35,7 @@ ROWS = 10
 COLUMNS = 10
 SQUARE_BOX_SIZE = 70
 
-PLAYER_TOKEN_COLORS = ["#ff0000", "#0000ff", "#ffff00", "#800080"]
+PLAYER_TOKEN_COLORS = ["red", "blue"]
 
 
 def draw_game_board(canvas):
@@ -149,9 +149,7 @@ class GameLogic:
 
 
         self.current_player_lbl = tk.Label(
-            self.game_controls, text="Current Turn:\n", bg="lightgray",
-            font=("Poppins", 14, "bold")
-        )
+            self.game_controls, text="Current Turn:\n", bg="lightgray",font=("Poppins", 14, "bold"))
         self.current_player_lbl.pack(pady=10)
 
         self.dice_result_lbl = tk.Label(
